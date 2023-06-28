@@ -5,6 +5,10 @@ import com.api.Controledeestacionamento.repositories.ControleDeEstacionamentoRep
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class ControleDeEstacionamentoService {
 
@@ -19,6 +23,14 @@ public class ControleDeEstacionamentoService {
         return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModel);
     }
 
+    public List<ControleDeEstacionamentoModel> findAll() {
+        return controleDeEstacionamentoRepository.findAll();
+    }
+
+    public Optional<ControleDeEstacionamentoModel> findById(UUID id) {
+        return controleDeEstacionamentoRepository.findById(id);
+    }
+
     public boolean existePlacaDeCarro(String placaDoCarro) {
         return controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro);
     }
@@ -30,4 +42,5 @@ public class ControleDeEstacionamentoService {
     public boolean existeApartamentoBlocoEmUso(String apartamento, String bloco) {
         return controleDeEstacionamentoRepository.existsByApartamentoAndBloco(apartamento, bloco);
     }
+
 }
