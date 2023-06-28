@@ -3,6 +3,7 @@ package com.api.Controledeestacionamento.services;
 import com.api.Controledeestacionamento.models.ControleDeEstacionamentoModel;
 import com.api.Controledeestacionamento.repositories.ControleDeEstacionamentoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +31,12 @@ public class ControleDeEstacionamentoService {
     public Optional<ControleDeEstacionamentoModel> findById(UUID id) {
         return controleDeEstacionamentoRepository.findById(id);
     }
+
+    @Transactional
+    public void delete(ControleDeEstacionamentoModel controleDeEstacionamentoModel) {
+        controleDeEstacionamentoRepository.delete(controleDeEstacionamentoModel);
+    }
+
 
     public boolean existePlacaDeCarro(String placaDoCarro) {
         return controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro);

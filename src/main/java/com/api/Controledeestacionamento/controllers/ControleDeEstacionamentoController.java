@@ -57,5 +57,16 @@ public class ControleDeEstacionamentoController {
                 : ResponseEntity.status(HttpStatus.OK).body(controleDeEstacionamentoModelOptional.get());
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteVagaDeEstacionamento(@PathVariable(value = "id") UUID id) {
+        Optional<ControleDeEstacionamentoModel> controleDeEstacionamentoModelOptional = controleDeEstacionamentoService.findById(id);
+        if (!controleDeEstacionamentoModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga de estacionamento não encontrada !");
+        } else {
+            controleDeEstacionamentoService.delete(controleDeEstacionamentoModelOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Vaga de estacionamento deletada com sucesso !");
+        }
+    }
+
 
 }
