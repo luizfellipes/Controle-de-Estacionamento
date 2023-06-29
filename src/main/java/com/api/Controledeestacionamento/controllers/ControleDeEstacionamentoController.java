@@ -26,6 +26,7 @@ public class ControleDeEstacionamentoController {
         this.controleDeEstacionamentoService = controleDeEstacionamentoService;
     }
 
+    ControleDeEstacionamentoModel controleDeEstacionamentoModel = new ControleDeEstacionamentoModel();
 
     @PostMapping
     public ResponseEntity<Object> salvarControleDeEstacionamento(@RequestBody @Valid ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
@@ -39,7 +40,6 @@ public class ControleDeEstacionamentoController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflito: A vaga já esta em uso pelo apartamento:  "
                     + controleDeEstacionamentoDto.getApartamento() + "E bloco: " + controleDeEstacionamentoDto.getBloco());
         }
-        ControleDeEstacionamentoModel controleDeEstacionamentoModel = new ControleDeEstacionamentoModel();
         BeanUtils.copyProperties(controleDeEstacionamentoDto, controleDeEstacionamentoModel);
         controleDeEstacionamentoModel.setDataDeRegistro(LocalDateTime.now(ZoneId.of("UTC")));
         return ResponseEntity.status(HttpStatus.CREATED).body(controleDeEstacionamentoService.save(controleDeEstacionamentoModel));
@@ -68,5 +68,15 @@ public class ControleDeEstacionamentoController {
         }
     }
 
-
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateVagaDeEstacionamento(@PathVariable(value = "id") UUID id, @RequestBody @Valid ControleDeEstacionamentoDto controleDeEstacionamentoDto){
+        Optional<ControleDeEstacionamentoModel> controleDeEstacionamentoModelOptional = controleDeEstacionamentoService.findById(id);
+        if(!controleDeEstacionamentoModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga não encontrada !");
+        }
+        BeanUtils.copyProperties(controleDeEstacionamentoDto, controleDeEstacionamentoModel);
+        controleDeEstacionamentoModel.setId(controleDeEstacionamentoModelOptional.get().getId());
+        controleDeEstacionamentoModel.setDataDeRegistro(controleDeEstacionamentoModelOptional.get().getDataDeRegistro());
+        return ResponseEntity.status(HttpStatus.OK).body(controleDeEstacionamentoService.save(controleDeEstacionamentoModel));
+    }
 }
