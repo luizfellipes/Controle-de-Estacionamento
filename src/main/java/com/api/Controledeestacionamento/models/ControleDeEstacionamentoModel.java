@@ -15,7 +15,7 @@ public class ControleDeEstacionamentoModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, unique = true, length = 10)
-    private String numeroDoControleDeEstacionamento;
+    private Integer numeroDoControleDeEstacionamento;
     @Column(nullable = false, unique = true, length = 7)
     private String placaDoCarro;
     @Column(nullable = false, length = 70)
@@ -33,6 +33,18 @@ public class ControleDeEstacionamentoModel implements Serializable {
     @Column(nullable = false, length = 30)
     private String bloco;
 
+    public ControleDeEstacionamentoModel(Integer numeroDoControleDeEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
+        this.numeroDoControleDeEstacionamento = numeroDoControleDeEstacionamento;
+        this.placaDoCarro = placaDoCarro;
+        this.marcaDoCarro = marcaDoCarro;
+        this.modeloDoCarro = modeloDoCarro;
+        this.corDoCarro = corDoCarro;
+        this.dataDeRegistro = dataDeRegistro;
+        this.nomeDoResponsavel = nomeDoResponsavel;
+        this.apartamento = apartamento;
+        this.bloco = bloco;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -41,11 +53,11 @@ public class ControleDeEstacionamentoModel implements Serializable {
         this.id = id;
     }
 
-    public String getNumeroDoControleDeEstacionamento() {
+    public Integer getNumeroDoControleDeEstacionamento() {
         return numeroDoControleDeEstacionamento;
     }
 
-    public void setNumeroDoControleDeEstacionamento(String numeroDoControleDeEstacionamento) {
+    public void setNumeroDoControleDeEstacionamento(Integer numeroDoControleDeEstacionamento) {
         this.numeroDoControleDeEstacionamento = numeroDoControleDeEstacionamento;
     }
 

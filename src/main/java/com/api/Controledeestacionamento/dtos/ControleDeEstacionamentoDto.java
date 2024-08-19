@@ -1,12 +1,15 @@
 package com.api.Controledeestacionamento.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDateTime;
 
 
 public record ControleDeEstacionamentoDto(
         @NotBlank
-        String numeroDoControleDeEstacionamento,
+        Integer numeroDoControleDeEstacionamento,
         @NotBlank
         @Size(max = 7)
         String placaDoCarro,
@@ -16,6 +19,8 @@ public record ControleDeEstacionamentoDto(
         String modeloDoCarro,
         @NotBlank
         String corDoCarro,
+        @NotNull
+        LocalDateTime dataDeRegistro,
         @NotBlank
         String nomeDoResponsavel,
         @NotBlank
