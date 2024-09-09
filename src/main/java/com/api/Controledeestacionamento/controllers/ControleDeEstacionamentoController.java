@@ -20,7 +20,7 @@ import java.util.UUID;
 public class ControleDeEstacionamentoController {
 
     private final ControleDeEstacionamentoService controleDeEstacionamentoService;
-    private static final Logger log = LoggerFactory.getLogger(ControleDeEstacionamentoService.class);
+    private static final Logger log = LoggerFactory.getLogger(ControleDeEstacionamentoController.class);
 
     public ControleDeEstacionamentoController(ControleDeEstacionamentoService controleDeEstacionamentoService) {
         this.controleDeEstacionamentoService = controleDeEstacionamentoService;
@@ -39,7 +39,7 @@ public class ControleDeEstacionamentoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ControleDeEstacionamentoModel>> getUmaVaga(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<ControleDeEstacionamentoModel> getUmaVaga(@PathVariable(value = "id") UUID id) {
         log.info("uma vaga solicitada.");
         return ResponseEntity.status(HttpStatus.OK).body(controleDeEstacionamentoService.findById(id));
     }

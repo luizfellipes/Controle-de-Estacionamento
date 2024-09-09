@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Service
 public class ControleDeEstacionamentoService {
 
-    final ControleDeEstacionamentoRepository controleDeEstacionamentoRepository;
+    private final ControleDeEstacionamentoRepository controleDeEstacionamentoRepository;
 
     public ControleDeEstacionamentoService(ControleDeEstacionamentoRepository controleDeEstacionamentoRepository) {
         this.controleDeEstacionamentoRepository = controleDeEstacionamentoRepository;
@@ -38,19 +38,19 @@ public class ControleDeEstacionamentoService {
         return controleDeEstacionamentoRepository.findAll();
     }
 
-    public Optional<ControleDeEstacionamentoModel> findById(UUID id) {
-        return Optional.ofNullable(controleDeEstacionamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Vaga de estacionamento não encontrada !")));
+    public ControleDeEstacionamentoModel findById(UUID id) {
+        return controleDeEstacionamentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Vaga de estacionamento não encontrada !"));
     }
 
     @Transactional
     public void deleteById(UUID id) {
-        findById(id).ifPresent(controleDeEstacionamentoRepository::delete);
+        Optional.of(findById(id)).ifPresent(controleDeEstacionamentoRepository::delete);
     }
 
     public ControleDeEstacionamentoModel update(UUID id, ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
-        Optional<ControleDeEstacionamentoModel> controleDeEstacionamentoModelOptional = findById(id);
-        BeanUtils.copyProperties(convertControleEstacionamentoDTO(controleDeEstacionamentoDto), controleDeEstacionamentoModelOptional.get());
-        return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModelOptional.get());
+        ControleDeEstacionamentoModel controleDeEstacionamentoModel = findById(id);
+        BeanUtils.copyProperties(convertControleEstacionamentoDTO(controleDeEstacionamentoDto), controleDeEstacionamentoModel);
+        return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModel);
     }
 
     private void existePlacaDeCarro(String placaDoCarro) {
