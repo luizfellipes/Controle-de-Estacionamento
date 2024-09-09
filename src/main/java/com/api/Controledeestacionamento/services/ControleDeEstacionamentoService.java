@@ -25,15 +25,9 @@ public class ControleDeEstacionamentoService {
     public ControleDeEstacionamentoModel save(ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
         return Stream.of(convertControleEstacionamentoDTO(controleDeEstacionamentoDto))
                 .map(controleDeEstacionamentoModel -> {
-                    if (existePlacaDeCarro(controleDeEstacionamentoModel.getPlacaDoCarro())) {
-                        throw new RuntimeException("Conflito: Já existe um carro com essa placa !");
-                    }
-                    if (existeVagaDeCarroEmUso(controleDeEstacionamentoModel.getNumeroDoControleDeEstacionamento())) {
-                        throw new RuntimeException("Conflito: A vaga esta em uso !");
-                    }
-                    if (existeApartamentoBlocoEmUso(controleDeEstacionamentoModel.getApartamento(), controleDeEstacionamentoModel.getBloco())) {
-                        throw new RuntimeException("Conflito: A vaga já esta em uso pelo apartamento:  " + controleDeEstacionamentoModel.getApartamento() + "E bloco: " + controleDeEstacionamentoModel.getBloco());
-                    }
+                    existePlacaDeCarro(controleDeEstacionamentoModel.getPlacaDoCarro());
+                    existeVagaDeCarroEmUso(controleDeEstacionamentoModel.getNumeroDoControleDeEstacionamento());
+                    existeApartamentoBlocoEmUso(controleDeEstacionamentoModel.getApartamento(), controleDeEstacionamentoModel.getBloco());
                     return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModel);
                 })
                 .findFirst()
@@ -59,20 +53,22 @@ public class ControleDeEstacionamentoService {
         return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModelOptional.get());
     }
 
-    private boolean existePlacaDeCarro(String placaDoCarro) {
-        return Stream.of(placaDoCarro)
-                .filter(controleDeEstacionamentoRepository::existsByPlacaDoCarro)
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("Conflito: Já existe um carro com essa placa !")) != null;
+    private void existePlacaDeCarro(String placaDoCarro) {
+        if (controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro)) {
+            throw new RuntimeException("Conflito: Já existe um carro com essa placa !");
+        }
     }
 
-
-    private boolean existeVagaDeCarroEmUso(Integer numeroDoControleDeEstacionamento) {
-        return controleDeEstacionamentoRepository.existsByNumeroDoControleDeEstacionamento(numeroDoControleDeEstacionamento);
+    private void existeVagaDeCarroEmUso(Integer numeroDoControleDeEstacionamento) {
+        if (controleDeEstacionamentoRepository.existsByNumeroDoControleDeEstacionamento(numeroDoControleDeEstacionamento)) {
+            throw new RuntimeException("Conflito: A vaga esta em uso !");
+        }
     }
 
-    private boolean existeApartamentoBlocoEmUso(String apartamento, String bloco) {
-        return controleDeEstacionamentoRepository.existsByApartamentoAndBloco(apartamento, bloco);
+    private void existeApartamentoBlocoEmUso(String apartamento, String bloco) {
+        if (controleDeEstacionamentoRepository.existsByApartamentoAndBloco(apartamento, bloco)) {
+            throw new RuntimeException("Conflito: A vaga já esta em uso pelo apartamento: " + apartamento + " e bloco: " + bloco);
+        }
     }
 
     private ControleDeEstacionamentoModel convertControleEstacionamentoDTO(ControleDeEstacionamentoDto DTO) {
