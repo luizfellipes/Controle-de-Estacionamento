@@ -60,8 +60,12 @@ public class ControleDeEstacionamentoService {
     }
 
     private boolean existePlacaDeCarro(String placaDoCarro) {
-        return controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro);
+        return Stream.of(placaDoCarro)
+                .filter(controleDeEstacionamentoRepository::existsByPlacaDoCarro)
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Conflito: Já existe um carro com essa placa !")) != null;
     }
+
 
     private boolean existeVagaDeCarroEmUso(Integer numeroDoControleDeEstacionamento) {
         return controleDeEstacionamentoRepository.existsByNumeroDoControleDeEstacionamento(numeroDoControleDeEstacionamento);

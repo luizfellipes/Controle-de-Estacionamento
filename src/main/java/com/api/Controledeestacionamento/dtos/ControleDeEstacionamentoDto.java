@@ -8,23 +8,31 @@ import java.time.LocalDateTime;
 
 
 public record ControleDeEstacionamentoDto(
-        @NotBlank
+        @NotNull
         Integer numeroDoControleDeEstacionamento,
+
         @NotBlank
         @Size(max = 7)
         String placaDoCarro,
+
         @NotBlank
         String marcaDoCarro,
+
         @NotBlank
         String modeloDoCarro,
+
         @NotBlank
         String corDoCarro,
+
         @NotNull
         LocalDateTime dataDeRegistro,
+
         @NotBlank
         String nomeDoResponsavel,
+
         @NotBlank
         String apartamento,
+
         @NotBlank
         String bloco
 ) {

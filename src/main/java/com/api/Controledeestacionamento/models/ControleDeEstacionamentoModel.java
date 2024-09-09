@@ -33,6 +33,9 @@ public class ControleDeEstacionamentoModel implements Serializable {
     @Column(nullable = false, length = 30)
     private String bloco;
 
+    public ControleDeEstacionamentoModel() {
+    }
+
     public ControleDeEstacionamentoModel(Integer numeroDoControleDeEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
         this.numeroDoControleDeEstacionamento = numeroDoControleDeEstacionamento;
         this.placaDoCarro = placaDoCarro;
