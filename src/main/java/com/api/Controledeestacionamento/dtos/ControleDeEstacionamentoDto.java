@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public record ControleDeEstacionamentoDto(
         @NotNull
-        Integer numeroDoControleDeEstacionamento,
+        Integer vagaDoEstacionamento,
 
         @NotBlank
         @Size(max = 7)

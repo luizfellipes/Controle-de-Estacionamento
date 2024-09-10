@@ -16,7 +16,7 @@ public class ControleDeEstacionamentoModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(nullable = false, unique = true, length = 10)
-    private Integer numeroDoControleDeEstacionamento;
+    private Integer vagaDoEstacionamento;
     @Column(nullable = false, unique = true, length = 7)
     private String placaDoCarro;
     @Column(nullable = false, length = 70)
@@ -37,8 +37,8 @@ public class ControleDeEstacionamentoModel implements Serializable {
     public ControleDeEstacionamentoModel() {
     }
 
-    public ControleDeEstacionamentoModel(Integer numeroDoControleDeEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
-        this.numeroDoControleDeEstacionamento = numeroDoControleDeEstacionamento;
+    public ControleDeEstacionamentoModel(Integer vagaDoEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
+        this.vagaDoEstacionamento = vagaDoEstacionamento;
         this.placaDoCarro = placaDoCarro;
         this.marcaDoCarro = marcaDoCarro;
         this.modeloDoCarro = modeloDoCarro;
@@ -57,12 +57,12 @@ public class ControleDeEstacionamentoModel implements Serializable {
         this.id = id;
     }
 
-    public Integer getNumeroDoControleDeEstacionamento() {
-        return numeroDoControleDeEstacionamento;
+    public Integer getVagaDoEstacionamento() {
+        return vagaDoEstacionamento;
     }
 
-    public void setNumeroDoControleDeEstacionamento(Integer numeroDoControleDeEstacionamento) {
-        this.numeroDoControleDeEstacionamento = numeroDoControleDeEstacionamento;
+    public void setVagaDoEstacionamento(Integer vagaDoEstacionamento) {
+        this.vagaDoEstacionamento = vagaDoEstacionamento;
     }
 
     public String getPlacaDoCarro() {
