@@ -4,13 +4,14 @@ import com.api.Controledeestacionamento.dtos.ControleDeEstacionamentoDto;
 import com.api.Controledeestacionamento.models.ControleDeEstacionamentoModel;
 import com.api.Controledeestacionamento.repositories.ControleDeEstacionamentoRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import static com.api.Controledeestacionamento.configs.CopyPropertiesConfig.copyProperties;
 
 @Service
 public class ControleDeEstacionamentoService {
@@ -26,7 +27,7 @@ public class ControleDeEstacionamentoService {
         return Stream.of(convertControleEstacionamentoDTO(controleDeEstacionamentoDto))
                 .map(controleDeEstacionamentoModel -> {
                     existePlacaDeCarro(controleDeEstacionamentoModel.getPlacaDoCarro());
-                    existeVagaDeCarroEmUso(controleDeEstacionamentoModel.getNumeroDoControleDeEstacionamento());
+                    existeVagaDeCarroEmUso(controleDeEstacionamentoModel.getVagaDoEstacionamento());
                     existeApartamentoBlocoEmUso(controleDeEstacionamentoModel.getApartamento(), controleDeEstacionamentoModel.getBloco());
                     return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModel);
                 })
@@ -48,9 +49,11 @@ public class ControleDeEstacionamentoService {
     }
 
     public ControleDeEstacionamentoModel update(UUID id, ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
-        ControleDeEstacionamentoModel controleDeEstacionamentoModel = findById(id);
-        BeanUtils.copyProperties(convertControleEstacionamentoDTO(controleDeEstacionamentoDto), controleDeEstacionamentoModel);
-        return controleDeEstacionamentoRepository.save(controleDeEstacionamentoModel);
+        ControleDeEstacionamentoModel controleDeEstacionamentoExistente = findById(id);
+        ControleDeEstacionamentoModel controleDeEstacionamentoParaAtualizar = convertControleEstacionamentoDTO(controleDeEstacionamentoDto);
+
+        copyProperties(controleDeEstacionamentoParaAtualizar, controleDeEstacionamentoExistente);
+        return controleDeEstacionamentoRepository.save(controleDeEstacionamentoExistente);
     }
 
     private void existePlacaDeCarro(String placaDoCarro) {
@@ -59,8 +62,8 @@ public class ControleDeEstacionamentoService {
         }
     }
 
-    private void existeVagaDeCarroEmUso(Integer numeroDoControleDeEstacionamento) {
-        if (controleDeEstacionamentoRepository.existsByNumeroDoControleDeEstacionamento(numeroDoControleDeEstacionamento)) {
+    private void existeVagaDeCarroEmUso(Integer vagaDoEstacionamento) {
+        if (controleDeEstacionamentoRepository.existsByVagaDoEstacionamento(vagaDoEstacionamento)) {
             throw new RuntimeException("Conflito: A vaga esta em uso !");
         }
     }
@@ -72,7 +75,7 @@ public class ControleDeEstacionamentoService {
     }
 
     private ControleDeEstacionamentoModel convertControleEstacionamentoDTO(ControleDeEstacionamentoDto DTO) {
-        return new ControleDeEstacionamentoModel(DTO.numeroDoControleDeEstacionamento(), DTO.placaDoCarro(), DTO.marcaDoCarro(), DTO.modeloDoCarro(), DTO.corDoCarro(), DTO.dataDeRegistro(), DTO.nomeDoResponsavel(), DTO.apartamento(), DTO.bloco());
+        return new ControleDeEstacionamentoModel(DTO.vagaDoEstacionamento(), DTO.placaDoCarro(), DTO.marcaDoCarro(), DTO.modeloDoCarro(), DTO.corDoCarro(), DTO.dataDeRegistro(), DTO.nomeDoResponsavel(), DTO.apartamento(), DTO.bloco());
     }
 
 
