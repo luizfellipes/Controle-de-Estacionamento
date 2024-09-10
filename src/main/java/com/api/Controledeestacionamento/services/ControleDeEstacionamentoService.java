@@ -75,6 +75,21 @@ public class ControleDeEstacionamentoService {
                 });
     }
 
+    public ControleDeEstacionamentoModel patch(UUID id, ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
+        return Stream.of(convertControleEstacionamentoDTO(controleDeEstacionamentoDto))
+                .map(controleDeEstacionamentoParaAtualizar -> {
+                    ControleDeEstacionamentoModel controleDeEstacionamentoExistente = findById(id);
+                    copyProperties(controleDeEstacionamentoParaAtualizar, controleDeEstacionamentoExistente);
+                    log.info("Vaga atualizada por patch.");
+                    return controleDeEstacionamentoRepository.save(controleDeEstacionamentoExistente);
+                })
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.warn("Não foi possivel realizar a atualização do patch");
+                    return new RuntimeException("Não foi possivel realizar a atualizaçao da vaga por patch");
+                });
+    }
+
     private void existePlacaDeCarro(String placaDoCarro) {
         if (controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro)) {
             log.warn("placa de carro existente.");

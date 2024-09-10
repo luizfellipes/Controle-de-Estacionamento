@@ -55,4 +55,10 @@ public class ControleDeEstacionamentoController {
         log.info("atualizando vaga.");
         return ResponseEntity.status(HttpStatus.OK).body(controleDeEstacionamentoService.update(id, controleDeEstacionamentoDto));
     }
+
+    @PatchMapping ("/{id}")
+    public ResponseEntity<Object> patchVagaDeEstacionamento(@PathVariable(value = "id") UUID id, @RequestBody ControleDeEstacionamentoDto controleDeEstacionamentoDto) {
+        log.info("realizando o patch vaga.");
+        return ResponseEntity.status(HttpStatus.OK).body(controleDeEstacionamentoService.patch(id, controleDeEstacionamentoDto));
+    }
 }
