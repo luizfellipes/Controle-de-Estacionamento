@@ -27,14 +27,19 @@ public class RequestsValidation {
     }
 
     @ExceptionHandler(VagaEstacionamentoBadRequest.class)
-    public ResponseEntity<Object> transacao400(VagaEstacionamentoBadRequest exception) {
-        log.error("Error in the request.");
+    public ResponseEntity<Object> parkingSlot400(VagaEstacionamentoBadRequest exception) {
+        log.error("Error in the parkingSlot.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new respostaPersonalizada(HttpStatus.BAD_REQUEST.value(), exception.getMessage()));
     }
 
     @ExceptionHandler(VagaEstacionamentoNaoEncontrada.class)
-    public ResponseEntity<Object> transacao404(VagaEstacionamentoNaoEncontrada exception) {
-        log.error("Not Found a transaction.");
+    public ResponseEntity<Object> parkingSlot404(VagaEstacionamentoNaoEncontrada exception) {
+        log.error("Not Found a parkingSlot.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new respostaPersonalizada(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
+    }
+    @ExceptionHandler(VagaEstacionamentoConflito.class)
+    public ResponseEntity<Object> parkingSlot409(VagaEstacionamentoConflito exception) {
+        log.error("Conflict on parkingSlot.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new respostaPersonalizada(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
     }
 }

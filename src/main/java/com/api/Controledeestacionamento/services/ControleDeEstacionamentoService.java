@@ -1,6 +1,9 @@
 package com.api.Controledeestacionamento.services;
 
 import com.api.Controledeestacionamento.dtos.ControleDeEstacionamentoDto;
+import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoBadRequest;
+import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoConflito;
+import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoNaoEncontrada;
 import com.api.Controledeestacionamento.models.ControleDeEstacionamentoModel;
 import com.api.Controledeestacionamento.repositories.ControleDeEstacionamentoRepository;
 import jakarta.transaction.Transactional;
@@ -38,7 +41,7 @@ public class ControleDeEstacionamentoService {
                 .findFirst()
                 .orElseThrow(() -> {
                     log.warn("Não foi possivel registrar a vaga.");
-                    return new RuntimeException("Não é possivel registrar a vaga cadastrada.");
+                    return new VagaEstacionamentoBadRequest("Não é possivel registrar a vaga cadastrada.");
                 });
     }
 
@@ -50,7 +53,7 @@ public class ControleDeEstacionamentoService {
     public ControleDeEstacionamentoModel findById(UUID id) {
         return controleDeEstacionamentoRepository.findById(id).orElseThrow(() -> {
             log.warn("Vaga de estacionamento não encontrada !");
-            return new RuntimeException("Vaga de estacionamento não encontrada !");
+            return new VagaEstacionamentoNaoEncontrada("Vaga de estacionamento não encontrada !");
         });
     }
 
@@ -71,7 +74,7 @@ public class ControleDeEstacionamentoService {
                 .findFirst()
                 .orElseThrow(() -> {
                     log.warn("Não foi possivel realizar a atualização");
-                    return new RuntimeException("Não foi possivel realizar a atualizaçao da vaga");
+                    return new VagaEstacionamentoBadRequest("Não foi possivel realizar a atualizaçao da vaga");
                 });
     }
 
@@ -86,28 +89,28 @@ public class ControleDeEstacionamentoService {
                 .findFirst()
                 .orElseThrow(() -> {
                     log.warn("Não foi possivel realizar a atualização do patch");
-                    return new RuntimeException("Não foi possivel realizar a atualizaçao da vaga por patch");
+                    return new VagaEstacionamentoBadRequest("Não foi possivel realizar a atualizaçao da vaga por patch");
                 });
     }
 
     private void existePlacaDeCarro(String placaDoCarro) {
         if (controleDeEstacionamentoRepository.existsByPlacaDoCarro(placaDoCarro)) {
             log.warn("placa de carro existente.");
-            throw new RuntimeException("Conflito: Já existe um carro com essa placa !");
+            throw new VagaEstacionamentoConflito("Conflito: Já existe um carro com essa placa !");
         }
     }
 
     private void existeVagaDeCarroEmUso(Integer vagaDoEstacionamento) {
         if (controleDeEstacionamentoRepository.existsByVagaDoEstacionamento(vagaDoEstacionamento)) {
             log.warn("vaga existente.");
-            throw new RuntimeException("Conflito: A vaga esta em uso !");
+            throw new VagaEstacionamentoConflito("Conflito: A vaga esta em uso !");
         }
     }
 
     private void existeApartamentoBlocoEmUso(String apartamento, String bloco) {
         if (controleDeEstacionamentoRepository.existsByApartamentoAndBloco(apartamento, bloco)) {
             log.warn("vaga já esta em uso pelo apartamento");
-            throw new RuntimeException("Conflito: A vaga já esta em uso pelo apartamento: " + apartamento + " e bloco: " + bloco);
+            throw new VagaEstacionamentoConflito("Conflito: A vaga já esta em uso pelo apartamento: " + apartamento + " e bloco: " + bloco);
         }
     }
 
