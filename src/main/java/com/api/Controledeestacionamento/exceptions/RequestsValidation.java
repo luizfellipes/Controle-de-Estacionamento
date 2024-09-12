@@ -37,6 +37,7 @@ public class RequestsValidation {
         log.error("Not Found a parkingSlot.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new respostaPersonalizada(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
     }
+
     @ExceptionHandler(VagaEstacionamentoConflito.class)
     public ResponseEntity<Object> parkingSlot409(VagaEstacionamentoConflito exception) {
         log.error("Conflict on parkingSlot.");

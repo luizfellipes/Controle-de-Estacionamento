@@ -37,6 +37,19 @@ public class ControleDeEstacionamentoModel implements Serializable {
     public ControleDeEstacionamentoModel() {
     }
 
+    public ControleDeEstacionamentoModel(UUID id, Integer vagaDoEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
+        this.id = id;
+        this.vagaDoEstacionamento = vagaDoEstacionamento;
+        this.placaDoCarro = placaDoCarro;
+        this.marcaDoCarro = marcaDoCarro;
+        this.modeloDoCarro = modeloDoCarro;
+        this.corDoCarro = corDoCarro;
+        this.dataDeRegistro = dataDeRegistro;
+        this.nomeDoResponsavel = nomeDoResponsavel;
+        this.apartamento = apartamento;
+        this.bloco = bloco;
+    }
+
     public ControleDeEstacionamentoModel(Integer vagaDoEstacionamento, String placaDoCarro, String marcaDoCarro, String modeloDoCarro, String corDoCarro, LocalDateTime dataDeRegistro, String nomeDoResponsavel, String apartamento, String bloco) {
         this.vagaDoEstacionamento = vagaDoEstacionamento;
         this.placaDoCarro = placaDoCarro;
@@ -48,6 +61,8 @@ public class ControleDeEstacionamentoModel implements Serializable {
         this.apartamento = apartamento;
         this.bloco = bloco;
     }
+
+
 
     public UUID getId() {
         return id;
