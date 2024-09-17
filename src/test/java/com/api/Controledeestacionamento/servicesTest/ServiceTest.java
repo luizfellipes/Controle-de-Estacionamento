@@ -2,6 +2,7 @@ package com.api.Controledeestacionamento.servicesTest;
 
 import com.api.Controledeestacionamento.dtos.ControleDeEstacionamentoDto;
 import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoBadRequest;
+import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoConflito;
 import com.api.Controledeestacionamento.exceptions.VagaEstacionamentoNaoEncontrada;
 import com.api.Controledeestacionamento.models.ControleDeEstacionamentoModel;
 import com.api.Controledeestacionamento.repositories.ControleDeEstacionamentoRepository;
@@ -58,7 +59,7 @@ class ServiceTest {
     void deveTestarFindAllComSucesso() {
         when(repository.findAll()).thenReturn(List.of());
 
-      List<ControleDeEstacionamentoModel> models = controleDeEstacionamentoService.findAll();
+        List<ControleDeEstacionamentoModel> models = controleDeEstacionamentoService.findAll();
 
         Assertions.assertTrue(models.isEmpty());
     }
@@ -103,13 +104,6 @@ class ServiceTest {
         ControleDeEstacionamentoModel patchedModel = controleDeEstacionamentoService.patch(UUID.randomUUID(), controleDeEstacionamentoDtoResponseMock());
 
         Assertions.assertEquals(mockModel, patchedModel);
-    }
-
-    @Test
-    void deveTestarConverterDtoEmEntity() {
-        ControleDeEstacionamentoModel converToModel = controleDeEstacionamentoService.convertControleEstacionamentoDTO(controleDeEstacionamentoDtoResponseMock());
-
-        Assertions.assertNotNull(converToModel);
     }
 
 
@@ -169,5 +163,112 @@ class ServiceTest {
         when(repository.findById(any())).thenThrow(new VagaEstacionamentoNaoEncontrada());
         Executable patchById = () -> controleDeEstacionamentoService.patch(UUID.randomUUID(), DTO);
         Assertions.assertThrows(VagaEstacionamentoNaoEncontrada.class, patchById);
+    }
+
+    @Test
+    void deveTestarSalvarCarroQuandoPlacaNaoExiste() {
+        ControleDeEstacionamentoModel mockModel = controleDeEstacionamentoModelResponseMock();
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+
+        when(repository.existsByPlacaDoCarro(anyString())).thenReturn(false);
+        when(repository.save(any())).thenReturn(mockModel);
+
+        ControleDeEstacionamentoModel mockModelSaved = controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertNotEquals("", mockModelSaved.getPlacaDoCarro());
+        Assertions.assertEquals(mockModelSaved.getPlacaDoCarro(), mockModel.getPlacaDoCarro());
+
+        verify(repository).existsByPlacaDoCarro(DTO.placaDoCarro());
+    }
+
+    @Test
+    void deveTestarPlacaExistente() {
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+        when(repository.existsByPlacaDoCarro(anyString())).thenReturn(true);
+
+        Executable placaExistente = () -> controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertThrows(VagaEstacionamentoConflito.class, placaExistente);
+        verify(repository).existsByPlacaDoCarro(DTO.placaDoCarro());
+    }
+
+    @Test
+    void deveTestarSalvarCarroQuandoExisteVagaDeCarroEmUso() {
+        ControleDeEstacionamentoModel mockModel = controleDeEstacionamentoModelResponseMock();
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+
+        when(repository.existsByVagaDoEstacionamento(anyInt())).thenReturn(false);
+        when(repository.save(any())).thenReturn(mockModel);
+
+        ControleDeEstacionamentoModel mockModelSaved = controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertNotEquals(2, mockModelSaved.getVagaDoEstacionamento());
+        Assertions.assertEquals(mockModelSaved.getVagaDoEstacionamento(), mockModel.getVagaDoEstacionamento());
+
+        verify(repository).existsByVagaDoEstacionamento(DTO.vagaDoEstacionamento());
+    }
+
+    @Test
+    void deveTestarVagaDeCarroEmUso() {
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+        when(repository.existsByVagaDoEstacionamento(anyInt())).thenReturn(true);
+
+        Executable vagaExistente = () -> controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertThrows(VagaEstacionamentoConflito.class, vagaExistente);
+        verify(repository).existsByVagaDoEstacionamento(DTO.vagaDoEstacionamento());
+    }
+
+    @Test
+    void deveTestarSalvarQuandoApartamentoEBlocoNaoEstaoEmUso() {
+        ControleDeEstacionamentoModel mockModel = controleDeEstacionamentoModelResponseMock();
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+
+        when(repository.existsByApartamentoAndBloco(anyString(), anyString())).thenReturn(false);
+        when(repository.save(any())).thenReturn(mockModel);
+
+        ControleDeEstacionamentoModel mockModelSaved = controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertEquals(mockModelSaved.getApartamento(), mockModel.getApartamento());
+        Assertions.assertEquals(mockModelSaved.getBloco(), mockModel.getBloco());
+
+        verify(repository).existsByApartamentoAndBloco(DTO.apartamento(), DTO.bloco());
+    }
+
+    @Test
+    void deveTestarConflitoQuandoApartamentoEBlocoEstaoEmUso() {
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+
+        when(repository.existsByApartamentoAndBloco(anyString(), anyString())).thenReturn(true);
+
+        Executable apBloco = () -> controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertThrows(VagaEstacionamentoConflito.class, apBloco);
+
+        verify(repository).existsByApartamentoAndBloco(DTO.apartamento(), DTO.bloco());
+    }
+
+    @Test
+    void deveTestarSaveComConversaoCorretaDeDTOParaModelo() {
+        ControleDeEstacionamentoDto DTO = controleDeEstacionamentoDtoResponseMock();
+        ControleDeEstacionamentoModel mockModel = controleDeEstacionamentoModelResponseMock();
+
+        when(repository.existsByPlacaDoCarro(anyString())).thenReturn(false);
+        when(repository.existsByApartamentoAndBloco(anyString(), anyString())).thenReturn(false);
+        when(repository.save(any())).thenReturn(mockModel);
+
+        ControleDeEstacionamentoModel mockModelSaved = controleDeEstacionamentoService.save(DTO);
+
+        Assertions.assertEquals(DTO.vagaDoEstacionamento(), mockModelSaved.getVagaDoEstacionamento());
+        Assertions.assertEquals(DTO.placaDoCarro(), mockModelSaved.getPlacaDoCarro());
+        Assertions.assertEquals(DTO.marcaDoCarro(), mockModelSaved.getMarcaDoCarro());
+        Assertions.assertEquals(DTO.modeloDoCarro(), mockModelSaved.getModeloDoCarro());
+        Assertions.assertEquals(DTO.corDoCarro(), mockModelSaved.getCorDoCarro());
+        Assertions.assertEquals(DTO.dataDeRegistro(), mockModelSaved.getDataDeRegistro());
+        Assertions.assertEquals(DTO.nomeDoResponsavel(), mockModelSaved.getNomeDoResponsavel());
+        Assertions.assertEquals(DTO.apartamento(), mockModelSaved.getApartamento());
+        Assertions.assertEquals(DTO.bloco(), mockModelSaved.getBloco());
+
+        verify(repository).save(any(ControleDeEstacionamentoModel.class));
     }
 }
